@@ -1,0 +1,213 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BBOD | Our Gang</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #fff9f0;
+  color: #55445e;
+}
+
+header {
+  background: #fff0c7;
+  padding: 22px;
+  text-align: center;
+}
+
+header h1 {
+  color: #80509a;
+  margin: 0 0 15px;
+}
+
+nav a {
+  display: inline-block;
+  margin: 7px;
+  color: #654b72;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.intro {
+  text-align: center;
+  padding: 30px 15px 10px;
+}
+
+.intro h2 {
+  font-size: 28px;
+}
+
+.members {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding: 20px;
+  max-width: 900px;
+  margin: auto;
+}
+
+.card {
+  background: #ffedc2;
+  border-radius: 20px;
+  padding: 22px 12px;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  color: inherit;
+  font: inherit;
+  transition: transform .2s;
+}
+
+.card:active {
+  transform: scale(.96);
+}
+
+.photo {
+  width: 95px;
+  height: 95px;
+  border-radius: 50%;
+  background: #e9d5fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  font-size: 35px;
+}
+
+.card h3 {
+  margin-bottom: 5px;
+}
+
+.card p {
+  margin: 5px;
+}
+
+.details {
+  display: none;
+  background: #f0e1ff;
+  padding: 25px;
+  margin: 15px 20px;
+  border-radius: 20px;
+  text-align: center;
+}
+
+.details.show {
+  display: block;
+}
+
+.close {
+  background: #80509a;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 22px;
+  cursor: pointer;
+}
+
+footer {
+  background: #f0e1ff;
+  padding: 30px;
+  text-align: center;
+  margin-top: 30px;
+}
+
+@media (max-width: 360px) {
+  .members {
+    gap: 10px;
+    padding: 12px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>💜 BBOD</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="profiles.html">Gang</a>
+    <a href="index.html">Slam Book</a>
+    <a href="index.html">Memories</a>
+    <a href="index.html">Awards</a>
+  </nav>
+</header>
+
+<section class="intro">
+  <h2>Meet Our Crazy Gang 💜</h2>
+  <p>20 people. Countless memories. One family.</p>
+</section>
+
+<section class="members" id="members"></section>
+
+<section class="details" id="details">
+  <div id="profileContent"></div>
+  <button class="close" onclick="closeProfile()">Close</button>
+</section>
+
+<footer>
+  <h2>BBOD 💜</h2>
+  Different people. One beautiful story.
+</footer>
+
+<script>
+const members = Array.from({length: 20}, (_, i) => ({
+  name: `Member ${String(i + 1).padStart(2, "0")}`,
+  nickname: "Add nickname",
+  birthday: "Add birthday",
+  food: "Add favourite food",
+  hobby: "Add hobbies",
+  fact: "Add a fun fact",
+  emoji: "💜"
+}));
+
+const container = document.getElementById("members");
+
+members.forEach((member, index) => {
+  const card = document.createElement("button");
+  card.className = "card";
+  card.innerHTML = `
+    <div class="photo">${member.emoji}</div>
+    <h3>${member.name}</h3>
+    <p>${member.nickname}</p>
+    <p>Tap to know more ✨</p>
+  `;
+  card.onclick = () => openProfile(index);
+  container.appendChild(card);
+});
+
+function openProfile(index) {
+  const m = members[index];
+
+  document.getElementById("profileContent").innerHTML = `
+    <div class="photo">${m.emoji}</div>
+    <h2>${m.name} 💜</h2>
+    <p><b>Nickname:</b> ${m.nickname}</p>
+    <p><b>Birthday:</b> ${m.birthday}</p>
+    <p><b>Favourite food:</b> ${m.food}</p>
+    <p><b>Hobbies:</b> ${m.hobby}</p>
+    <p><b>Fun fact:</b> ${m.fact}</p>
+  `;
+
+  document.getElementById("details").classList.add("show");
+  document.getElementById("details").scrollIntoView({
+    behavior: "smooth"
+  });
+}
+
+function closeProfile() {
+  document.getElementById("details").classList.remove("show");
+}
+</script>
+
+</body>
+</html>
