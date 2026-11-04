@@ -267,5 +267,104 @@ qs.forEach((q,i)=>{
 });
 </script>
 
+<!-- BBOD PHOTO WALL -->
+<section id="bbod-photo-wall" style="padding:25px 15px;text-align:center;background:#fff0c7;">
+  <h2>📸 BBOD Memories</h2>
+  <p>Share your favourite gang moments!</p>
+
+  <input type="file" id="bbod-photo-input" accept="image/jpeg,image/png,image/webp">
+  <button id="bbod-upload-btn">Upload Photo</button>
+  <p id="bbod-upload-status"></p>
+
+  <div id="bbod-gallery" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:20px;"></div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const BBOD_URL = "https://olqcuazfohycgmbfvuqm.supabase.co";
+const BBOD_KEY = "sb_publishable_VL5hgyFa85yqIULPwdiJQg__R7YeOss";
+
+const bbodSupabase = window.supabase.createClient(BBOD_URL, BBOD_KEY);
+const bbodBucket = "bbod-photos";
+
+async function loadBBODPhotos() {
+  const gallery = document.getElementById("bbod-gallery");
+  gallery.innerHTML = "Loading photos...";
+
+  const { data, error } = await bbodSupabase.storage
+    .from(bbodBucket)
+    .list("", {
+      limit: 100,
+      sortBy: { column: "name", order: "desc" }
+    });
+
+  if (error) {
+    gallery.textContent = "Could not load photos.";
+    return;
+  }
+
+  gallery.innerHTML = "";
+
+  data.filter(file => file.name && !file.name.startsWith("."))
+    .forEach(file => {
+      const { data: urlData } = bbodSupabase.storage
+        .from(bbodBucket)
+        .getPublicUrl(file.name);
+
+      const img = document.createElement("img");
+      img.src = urlData.publicUrl;
+      img.alt = "BBOD memory";
+      img.style.cssText = "width:100%;height:160px;object-fit:cover;border-radius:12px;";
+      gallery.appendChild(img);
+    });
+
+  if (!gallery.children.length) {
+    gallery.textContent = "No photos yet. Be the first to share one!";
+  }
+}
+
+document.getElementById("bbod-upload-btn").addEventListener("click", async () => {
+  const input = document.getElementById("bbod-photo-input");
+  const status = document.getElementById("bbod-upload-status");
+  const file = input.files[0];
+
+  if (!file) {
+    status.textContent = "Please select a photo first.";
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    status.textContent = "Photo must be under 5 MB.";
+    return;
+  }
+
+  if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+    status.textContent = "Only JPG, PNG and WebP images are allowed.";
+    return;
+  }
+
+  status.textContent = "Uploading...";
+
+  const extension = file.name.split(".").pop().toLowerCase();
+  const filename = Date.now() + "-" + Math.random().toString(36).slice(2) + "." + extension;
+
+  const { error } = await bbodSupabase.storage
+    .from(bbodBucket)
+    .upload(filename, file, { contentType: file.type });
+
+  if (error) {
+    status.textContent = "Upload failed: " + error.message;
+    return;
+  }
+
+  status.textContent = "Photo uploaded successfully! ❤️";
+  input.value = "";
+  await loadBBODPhotos();
+});
+
+loadBBODPhotos();
+</script>
+<!-- END BBOD PHOTO WALL -->
 </body>
 </html>
